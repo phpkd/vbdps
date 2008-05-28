@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="phpkd_defpost_style" active="1">
+	<title>Default Post Styling</title>
+	<description>This mod allows users to choose their own default style for their posts.</description>
+	<version>1.0.0</version>
+	<url><![CDATA[http://www.phpkd.org/support/misc.php?do=producthelp&pid=phpkd_defpost_style]]></url>
+	<versioncheckurl><![CDATA[http://www.phpkd.org/support/misc.php?do=productcheck&pid=phpkd_defpost_style]]></versioncheckurl>
+	<dependencies>
+	</dependencies>
+	<codes>
+		<code version="1.0.0">
+			<installcode><![CDATA[$db->hide_errors();
+$db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` ADD `phpkd_defpost_style_font` VARCHAR(30) NOT NULL default ''");
+$db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` ADD `phpkd_defpost_style_size` smallint(2) unsigned NOT NULL default '0'");
+$db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` ADD `phpkd_defpost_style_color` VARCHAR(30) NOT NULL default ''");
+$db->show_errors();]]></installcode>
+			<uninstallcode><![CDATA[$db->hide_errors();
+$db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` DROP `phpkd_defpost_style_font`");
+$db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` DROP `phpkd_defpost_style_size`");
+$db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` DROP `phpkd_defpost_style_color`");
+$db->show_errors();]]></uninstallcode>
+		</code>
+	</codes>
+	<templates>
+		<template name="phpkd_defpost_style_postbit" templatetype="template" date="1208318800" username="PHPKD" version="1.0.0"><![CDATA[<if condition="$post['phpkd_defpost_style_font'] OR $post['phpkd_defpost_style_size'] OR $post['phpkd_defpost_style_color']">
+	<if condition="$post['phpkd_defpost_style_font'] AND $post['phpkd_defpost_style_font'] != '-1'"><font face="$post[phpkd_defpost_style_font]"></if>
+		<if condition="$post['phpkd_defpost_style_color'] AND $post['phpkd_defpost_style_color'] != '-1'"><font color="$post[phpkd_defpost_style_color]"></if>
+			<if condition="$post['phpkd_defpost_style_size'] AND $post['phpkd_defpost_style_size'] != '-1'"><font size="$post[phpkd_defpost_style_size]"></if>
+				$post[message]
+			<if condition="$post['phpkd_defpost_style_size'] AND $post['phpkd_defpost_style_size'] != '-1'"></font></if>
+		<if condition="$post['phpkd_defpost_style_color'] AND $post['phpkd_defpost_style_color'] != '-1'"></font></if>
+	<if condition="$post['phpkd_defpost_style_font'] AND $post['phpkd_defpost_style_font'] != '-1'"></font></if>
+<else />
+	$post[message]
+</if>]]></template>
+		<template name="phpkd_defpost_style_profile_options" templatetype="template" date="1208317324" username="PHPKD" version="1.0.0"><![CDATA[					<legend><phrase 1="$vbphrase[phpkd_defpost_style_font]" 2="$vbphrase[phpkd_defpost_style_size]" 3="$vbphrase[phpkd_defpost_style_color]">$vbphrase[phpkd_defpost_style_title]</phrase></legend>
+					<table cellpadding="0" cellspacing="$stylevar[formspacer]" border="0" width="100%">
+					<tr>
+						<td>$vbphrase[phpkd_defpost_style_desc]</td>
+					</tr>
+					<tr>
+						<td>
+							<select name="phpkd_defpost_style_font" id="sel_phpkd_defpost_style_font">
+								$type
+							</select>
+							<select name="phpkd_defpost_style_color" id="sel_phpkd_defpost_style_color">
+								$color
+							</select>
+							<select name="phpkd_defpost_style_size" id="sel_phpkd_defpost_style_size">
+								$size
+							</select>
+					   </td>
+					</tr>
+				</table>
+			</fieldset>
+				<fieldset class="fieldset">
+					<legend>$vbphrase[visible_post_elements]</legend>
+]]></template>
+	</templates>
+	<plugins>
+		<plugin active="1" executionorder="5">
+			<title>Auto Edit postbit template</title>
+			<hookname>postbit_display_complete</hookname>
+			<phpcode><![CDATA[if ($this->registry->options['phpkd_defpost_style_active'])
+	{
+		eval('$phpkd_defpost_style_postbit = "' . fetch_template('phpkd_defpost_style_postbit') . '";');
+		$this->registry->templatecache[$this->templatename] = str_replace('$post[message]', '$phpkd_defpost_style_postbit', $this->registry->templatecache[$this->templatename]);
+	}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title><![CDATA[Display options in profile's "Edit Options" page]]></title>
+			<hookname>profile_editoptions_start</hookname>
+			<phpcode><![CDATA[if ($vbulletin->options['phpkd_defpost_style_active'])
+	{
+		// Font Types
+		$fontoptions['type'] = preg_split('#\r?\n#s', $vbulletin->options['phpkd_defpost_style_fonts'], -1, PREG_SPLIT_NO_EMPTY);
+		$type = "<option value=\"-1\">" . $vbphrase['phpkd_defpost_default'] . "</option>";	
+		foreach ($fontoptions['type'] AS $fonttypeid => $fonttype)
+		{
+			if ($fonttype == $vbulletin->userinfo['phpkd_defpost_style_font'])
+			{
+				$selectedtype = " selected=\"selected\"";
+			}
+			$type .= "\t\t\t\t\t\t\t\t<option value=\"" . $fonttype . "\"$selectedtype>$fonttype</option>\n";
+			unset($selectedtype);
+		}
+
+		// Font Colors
+		$fontoptions['color'] = preg_split('#\r?\n#s', $vbulletin->options['phpkd_defpost_style_colors'], -1, PREG_SPLIT_NO_EMPTY);
+		$color = "<option value=\"-1\">" . $vbphrase['phpkd_defpost_default'] . "</option>";	
+		foreach ($fontoptions['color'] AS $fontcolorid => $fontcolor)
+		{
+			if ($fontcolor == $vbulletin->userinfo['phpkd_defpost_style_color'])
+			{
+				$selectedcolor = " selected=\"selected\"";
+			}
+			$color .= "\t\t\t\t\t\t\t\t<option style=\"background-color: $fontcolor\" value=\"" . $fontcolor . "\"$selectedcolor>$fontcolor</option>\n";
+			unset($selectedcolor);
+		}
+
+		// Font Sizes
+		$fontoptions['size'] = preg_split('#\r?\n#s', $vbulletin->options['phpkd_defpost_style_sizes'], -1, PREG_SPLIT_NO_EMPTY);
+		$size = "<option value=\"-1\">" . $vbphrase['phpkd_defpost_default'] . "</option>";	
+		foreach ($fontoptions['size'] AS $fontsizeid => $fontsize)
+		{
+			if ($fontsize == $vbulletin->userinfo['phpkd_defpost_style_size'])
+			{
+				$selectedsize = " selected=\"selected\"";
+			}
+			$size .= "\t\t\t\t\t\t\t\t<option value=\"" . $fontsize . "\"$selectedsize>$fontsize</option>\n";
+			unset($selectedsize);
+		}
+
+		unset($fontoptions);
+		$vbulletin->templatecache['modifyoptions'] = str_replace('<legend>$vbphrase[visible_post_elements]</legend>', fetch_template('phpkd_defpost_style_profile_options'), $vbulletin->templatecache['modifyoptions']);
+	}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Default Font/Color/Size in Post (applehat)</title>
+			<hookname>profile_updateoptions</hookname>
+			<phpcode><![CDATA[if ($vbulletin->options['phpkd_defpost_style_active'])
+	{
+		$vbulletin->input->clean_array_gpc('r', array('phpkd_defpost_style_font' => TYPE_STR, 'phpkd_defpost_style_size' => TYPE_STR, 'phpkd_defpost_style_color' => TYPE_STR));
+		$userdata->set('phpkd_defpost_style_font', $vbulletin->GPC['phpkd_defpost_style_font']);
+		$userdata->set('phpkd_defpost_style_size', $vbulletin->GPC['phpkd_defpost_style_size']);
+		$userdata->set('phpkd_defpost_style_color', $vbulletin->GPC['phpkd_defpost_style_color']);
+	}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title><![CDATA[Display default styling opions in Admincp (user's editing page)]]></title>
+			<hookname>useradmin_edit_column1</hookname>
+			<phpcode><![CDATA[if ($vbulletin->options['phpkd_defpost_style_active'])
+	{
+		print_description_row($vbphrase['phpkd_defpost_style'], false, 2, 'optiontitle');
+		$font_options = $db->query_read("
+			SELECT templateid, title, template, template_un, styleid, templatetype
+			FROM " . TABLE_PREFIX . "template
+			WHERE styleid = '" . iif($vbulletin->options['styleid'] > 1, $vbulletin->options['styleid'], '-1') . "'
+			AND title IN('editor_jsoptions_font', 'editor_jsoptions_size')
+		");
+
+		$font_cache = array();
+		while ($font_option = $db->fetch_array($font_options))
+		{
+			$font_cache["$font_option[title]"] = $font_option;
+		}
+		$db->free_result($font_options);
+
+		// Font Types
+		$fontoptions['type'] = $font_cache['editor_jsoptions_font']['template_un'];
+		$fontoption['type'] = preg_split('#\r?\n#s', $fontoptions['type'], -1, PREG_SPLIT_NO_EMPTY);
+
+		$type['-1'] = $vbphrase['phpkd_defpost_default'];
+		foreach ($fontoption['type'] AS $fonttypeid => $fonttype)
+		{
+			if ($fonttype == $user['phpkd_defpost_style_font'])
+			{
+				$selectedtype = " selected=\"selected\"";
+			}
+		
+			$type["$fonttype"] = $fonttype;
+			unset($selectedtype);
+		}
+		print_select_row($vbphrase['phpkd_defpost_style_font'], 'user[phpkd_defpost_style_font]', $type, $user['phpkd_defpost_style_font']);
+
+
+		// Font Colors
+		$fontoption['color'] = preg_split('#\r?\n#s', $vbulletin->options['phpkd_defpost_style_colors'], -1, PREG_SPLIT_NO_EMPTY);
+
+		$color['-1'] = $vbphrase['phpkd_defpost_default'];
+		foreach ($fontoption['color'] AS $fontcolorid => $fontcolor)
+		{
+			if ($fontcolor == $user['phpkd_defpost_style_color'])
+			{
+				$selectedcolor = " selected=\"selected\"";
+			}
+		
+			$color["$fontcolor"] = $fontcolor;
+			unset($selectedcolor);
+		}
+		print_select_row($vbphrase['phpkd_defpost_style_color'], 'user[phpkd_defpost_style_color]', $color, $user['phpkd_defpost_style_color']);
+
+
+		// Font Sizes
+		$fontoptions['size'] = $font_cache['editor_jsoptions_size']['template_un'];
+		$fontoption['size'] = preg_split('#\r?\n#s', $fontoptions['size'], -1, PREG_SPLIT_NO_EMPTY);
+
+		$size['-1'] = $vbphrase['phpkd_defpost_default'];
+		foreach ($fontoption['size'] AS $fontsizeid => $fontsize)
+		{
+			if ($fontsize == $user['phpkd_defpost_style_size'])
+			{
+				$selectedsize = " selected=\"selected\"";
+			}
+
+			$size["$fontsize"] = $fontsize;
+			unset($selectedsize);
+		}
+		print_select_row($vbphrase['phpkd_defpost_style_size'], 'user[phpkd_defpost_style_size]', $size, $user['phpkd_defpost_style_size']);
+
+		unset($font_option);
+	}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Default Font/Color/Size in Post (applehat)</title>
+			<hookname>userdata_start</hookname>
+			<phpcode><![CDATA[if ($this->registry->options['phpkd_defpost_style_active'])
+	{
+		$this->validfields['phpkd_defpost_style_font'] = array(TYPE_STR, REQ_NO);
+		$this->validfields['phpkd_defpost_style_size'] = array(TYPE_STR, REQ_NO);
+		$this->validfields['phpkd_defpost_style_color'] = array(TYPE_STR, REQ_NO);
+	}]]></phpcode>
+		</plugin>
+	</plugins>
+	<phrases>
+		<phrasetype name="Control Panel User Management" fieldname="cpuser">
+			<phrase name="phpkd_defpost_style" date="1208316837" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling]]></phrase>
+			<phrase name="phpkd_defpost_style_color" date="1208316443" username="PHPKD" version="1.0.0"><![CDATA[Default Color]]></phrase>
+			<phrase name="phpkd_defpost_style_font" date="1208316429" username="PHPKD" version="1.0.0"><![CDATA[Default Font]]></phrase>
+			<phrase name="phpkd_defpost_style_size" date="1208316448" username="PHPKD" version="1.0.0"><![CDATA[Default Size]]></phrase>
+		</phrasetype>
+		<phrasetype name="User Tools (global)" fieldname="user">
+			<phrase name="phpkd_defpost_default" date="1208268064" username="PHPKD" version="1.0.0"><![CDATA[Default]]></phrase>
+			<phrase name="phpkd_defpost_style_desc" date="1208268043" username="PHPKD" version="1.0.0"><![CDATA[You can specify a custom styling for your own posts to display it always with it.]]></phrase>
+			<phrase name="phpkd_defpost_style_title" date="1208268489" username="PHPKD" version="1.0.0"><![CDATA[Default post style (<label for="sel_phpkd_defpost_style_font">Font</label> | <label for="sel_phpkd_defpost_style_color">Color</label> | <label for="sel_phpkd_defpost_style_size">Size</label>)]]></phrase>
+		</phrasetype>
+		<phrasetype name="vBulletin Settings" fieldname="vbsettings">
+			<phrase name="setting_phpkd_defpost_style_active_desc" date="1208265315" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_active_title" date="1208265315" username="PHPKD" version="1.0.0"><![CDATA[Active]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_colors_desc" date="1211971715" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_colors_title" date="1211971715" username="PHPKD" version="1.0.0"><![CDATA[Colors]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_fonts_desc" date="1211971703" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_fonts_title" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[Fonts]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_sizes_desc" date="1211971708" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_sizes_title" date="1211971708" username="PHPKD" version="1.0.0" />
+			<phrase name="settinggroup_phpkd_defpost_style" date="1208265208" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling]]></phrase>
+		</phrasetype>
+	</phrases>
+	<options>
+		<settinggroup name="phpkd_defpost_style" displayorder="1511">
+			<setting varname="phpkd_defpost_style_active" displayorder="10">
+				<datatype>boolean</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>1</defaultvalue>
+			</setting>
+			<setting varname="phpkd_defpost_style_fonts" displayorder="20">
+				<datatype>free</datatype>
+				<optioncode>textarea</optioncode>
+				<defaultvalue>Arial
+Arial Black
+Arial Narrow
+Book Antiqua
+Century Gothic
+Comic Sans MS
+Courier New
+Fixedsys
+Franklin Gothic Medium
+Garamond
+Georgia
+Impact
+Lucida Console
+Lucida Sans Unicode
+Microsoft Sans Serif
+Palatino Linotype
+System
+Tahoma
+Times New Roman
+Trebuchet MS
+Verdana</defaultvalue>
+			</setting>
+			<setting varname="phpkd_defpost_style_colors" displayorder="30">
+				<datatype>free</datatype>
+				<optioncode>textarea</optioncode>
+				<defaultvalue>White
+Silver
+Gray
+DimGray
+DarkSlateGray
+Indigo
+SlateGray
+Purple
+DarkOrchid
+Plum
+LightBlue
+DeepSkyBlue
+RoyalBlue
+Blue
+Navy
+DarkSlateBlue
+Teal
+MediumTurquoise
+Cyan
+PaleTurquoise
+PaleGreen
+Lime
+SeaGreen
+Green
+DarkGreen
+DarkOliveGreen
+Olive
+YellowGreen
+Yellow
+LemonChiffon
+Wheat
+Orange
+SandyBrown
+DarkOrange
+Sienna
+Black
+DarkRed
+Red
+Magenta
+Pink</defaultvalue>
+			</setting>
+			<setting varname="phpkd_defpost_style_sizes" displayorder="40">
+				<datatype>free</datatype>
+				<optioncode>textarea</optioncode>
+				<defaultvalue>1
+2
+3
+4
+5
+6
+7</defaultvalue>
+			</setting>
+		</settinggroup>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+</product>
