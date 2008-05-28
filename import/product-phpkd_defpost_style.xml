@@ -2,11 +2,14 @@
 
 <product productid="phpkd_defpost_style" active="1">
 	<title>Default Post Styling</title>
-	<description>This mod allows users to choose their own default style for their posts.</description>
+	<description>This product allows users to choose their own default styling for their posts (Font type - colors - sizes).</description>
 	<version>1.0.0</version>
-	<url><![CDATA[http://www.phpkd.org/support/misc.php?do=producthelp&pid=phpkd_defpost_style]]></url>
-	<versioncheckurl><![CDATA[http://www.phpkd.org/support/misc.php?do=productcheck&pid=phpkd_defpost_style]]></versioncheckurl>
+	<revision><![CDATA[$Revision$]]></revision>
+	<released><![CDATA[$Date$]]></released>
+	<url><![CDATA[http://www.phpkd.net/forum/misc.php?do=mods&action=producthelp&pid=phpkd_defpost_style]]></url>
+	<versioncheckurl><![CDATA[http://www.phpkd.net/forum/misc.php?do=mods&action=productcheck&pid=phpkd_defpost_style]]></versioncheckurl>
 	<dependencies>
+		<dependency dependencytype="vbulletin" minversion="3.7.0" maxversion="3.7.99" />
 	</dependencies>
 	<codes>
 		<code version="1.0.0">
@@ -226,19 +229,19 @@ $db->show_errors();]]></uninstallcode>
 			<phrase name="phpkd_defpost_style_title" date="1208268489" username="PHPKD" version="1.0.0"><![CDATA[Default post style (<label for="sel_phpkd_defpost_style_font">Font</label> | <label for="sel_phpkd_defpost_style_color">Color</label> | <label for="sel_phpkd_defpost_style_size">Size</label>)]]></phrase>
 		</phrasetype>
 		<phrasetype name="vBulletin Settings" fieldname="vbsettings">
-			<phrase name="setting_phpkd_defpost_style_active_desc" date="1208265315" username="PHPKD" version="1.0.0" />
-			<phrase name="setting_phpkd_defpost_style_active_title" date="1208265315" username="PHPKD" version="1.0.0"><![CDATA[Active]]></phrase>
-			<phrase name="setting_phpkd_defpost_style_colors_desc" date="1211971715" username="PHPKD" version="1.0.0" />
-			<phrase name="setting_phpkd_defpost_style_colors_title" date="1211971715" username="PHPKD" version="1.0.0"><![CDATA[Colors]]></phrase>
-			<phrase name="setting_phpkd_defpost_style_fonts_desc" date="1211971703" username="PHPKD" version="1.0.0" />
-			<phrase name="setting_phpkd_defpost_style_fonts_title" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[Fonts]]></phrase>
-			<phrase name="setting_phpkd_defpost_style_sizes_desc" date="1211971708" username="PHPKD" version="1.0.0" />
-			<phrase name="setting_phpkd_defpost_style_sizes_title" date="1211971708" username="PHPKD" version="1.0.0" />
-			<phrase name="settinggroup_phpkd_defpost_style" date="1208265208" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_active_desc" date="1208265315" username="PHPKD" version="1.0.0"><![CDATA[Choose "Yes" to activate this product, or "No" to disable it globaly.]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_active_title" date="1208265315" username="PHPKD" version="1.0.0"><![CDATA[Product Active?]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_colors_desc" date="1211971715" username="PHPKD" version="1.0.0"><![CDATA[List allowed colors for default post styling heer (separate each color with a return [new line]).]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_colors_title" date="1211971715" username="PHPKD" version="1.0.0"><![CDATA[Allowed Colors]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_fonts_desc" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[List allowed font types for default post styling heer (enter the full name of the font type & separate each type with a return [new line]).]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_fonts_title" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[Allowed Fonts]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_sizes_desc" date="1211971708" username="PHPKD" version="1.0.0"><![CDATA[List allowed sizes for default post styling heer (separate each size with a return [new line]).]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_sizes_title" date="1211971708" username="PHPKD" version="1.0.0"><![CDATA[Allowed Sizes]]></phrase>
+			<phrase name="settinggroup_phpkd_defpost_style" date="1208265208" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling Settings]]></phrase>
 		</phrasetype>
 	</phrases>
 	<options>
-		<settinggroup name="phpkd_defpost_style" displayorder="1511">
+		<settinggroup name="phpkd_defpost_style" displayorder="1005">
 			<setting varname="phpkd_defpost_style_active" displayorder="10">
 				<datatype>boolean</datatype>
 				<optioncode>yesno</optioncode>
