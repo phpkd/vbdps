@@ -37,7 +37,7 @@ $db->show_errors();]]></uninstallcode>
 <else />
 	$post[message]
 </if>]]></template>
-		<template name="phpkd_defpost_style_profile_options" templatetype="template" date="1208317324" username="PHPKD" version="1.0.0"><![CDATA[					<legend><phrase 1="$vbphrase[phpkd_defpost_style_font]" 2="$vbphrase[phpkd_defpost_style_size]" 3="$vbphrase[phpkd_defpost_style_color]">$vbphrase[phpkd_defpost_style_title]</phrase></legend>
+		<template name="phpkd_defpost_style_profile_options" templatetype="template" date="1212981921" username="PHPKD" version="1.0.0"><![CDATA[<legend><phrase 1="$vbphrase[phpkd_defpost_style_font]" 2="$vbphrase[phpkd_defpost_style_size]" 3="$vbphrase[phpkd_defpost_style_color]">$vbphrase[phpkd_defpost_style_title]</phrase></legend>
 					<table cellpadding="0" cellspacing="$stylevar[formspacer]" border="0" width="100%">
 					<tr>
 						<td>$vbphrase[phpkd_defpost_style_desc]</td>
@@ -45,178 +45,364 @@ $db->show_errors();]]></uninstallcode>
 					<tr>
 						<td>
 							<select name="phpkd_defpost_style_font" id="sel_phpkd_defpost_style_font">
-								$type
+								$phpkd_defpost_style_types
 							</select>
 							<select name="phpkd_defpost_style_color" id="sel_phpkd_defpost_style_color">
-								$color
+								$phpkd_defpost_style_colors
 							</select>
 							<select name="phpkd_defpost_style_size" id="sel_phpkd_defpost_style_size">
-								$size
+								$phpkd_defpost_style_sizes
 							</select>
 					   </td>
 					</tr>
-				</table>
-			</fieldset>
+					</table>
+				</fieldset>
 				<fieldset class="fieldset">
-					<legend>$vbphrase[visible_post_elements]</legend>
-]]></template>
+					<legend>$vbphrase[visible_post_elements]</legend>]]></template>
 	</templates>
 	<plugins>
 		<plugin active="1" executionorder="5">
-			<title>Auto Edit postbit template</title>
+			<title><![CDATA[Default Post Styling [ Cache templates ]]]></title>
+			<hookname>cache_templates</hookname>
+			<phpcode><![CDATA[if (THIS_SCRIPT == 'profile' AND $_REQUEST['do'] == 'editoptions' AND $vbulletin->options['phpkd_defpost_style_active'])
+{
+	$globaltemplates[] = 'phpkd_defpost_style_profile_options';
+}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title><![CDATA[Default Post Styling [ Auto edit postbit template ]]]></title>
 			<hookname>postbit_display_complete</hookname>
 			<phpcode><![CDATA[if ($this->registry->options['phpkd_defpost_style_active'])
+{
+	$show['phpkd_defpost_style'] = true;
+	if ($this->registry->options['phpkd_defpost_style_forums_rule'] == 2 AND in_array($this->forum['forumid'], explode(',', $this->registry->options['phpkd_defpost_style_forums_ids'])))
+	{
+		$show['phpkd_defpost_style'] = false;
+	}
+	else if ($this->registry->options['phpkd_defpost_style_forums_rule'] == 1 AND !in_array($this->forum['forumid'], explode(',', $this->registry->options['phpkd_defpost_style_forums_ids'])))
+	{
+		$show['phpkd_defpost_style'] = false;
+	}
+
+	if ($this->registry->options['phpkd_defpost_style_grps_rule'] == 2 AND is_member_of($this->post['userid'], explode(',', $this->registry->options['phpkd_defpost_style_grps'])))
+	{
+		$show['phpkd_defpost_style'] = false;
+	}
+	else if ($this->registry->options['phpkd_defpost_style_grps_rule'] == 1 AND !is_member_of($this->post['userid'], explode(',', $this->registry->options['phpkd_defpost_style_grps'])))
+	{
+		$show['phpkd_defpost_style'] = false;
+	}
+
+	if (in_array($this->post['userid'], explode(',', $this->registry->options['phpkd_defpost_style_exc_usrs'])))
+	{
+		$show['phpkd_defpost_style'] = false;
+	}
+
+	if ($show['phpkd_defpost_style'])
 	{
 		eval('$phpkd_defpost_style_postbit = "' . fetch_template('phpkd_defpost_style_postbit') . '";');
 		$this->registry->templatecache[$this->templatename] = str_replace('$post[message]', '$phpkd_defpost_style_postbit', $this->registry->templatecache[$this->templatename]);
-	}]]></phpcode>
+	}
+}]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Display options in profile's "Edit Options" page]]></title>
+			<title><![CDATA[Default Post Styling [ Display options in profile's "Edit Options" page ]]]></title>
 			<hookname>profile_editoptions_start</hookname>
-			<phpcode><![CDATA[if ($vbulletin->options['phpkd_defpost_style_active'])
+			<phpcode><![CDATA[class PHPKD_DefPost_Style
+{
+	function PHPKD_DefPost_Style(&$vbobj, $vbphrs)
 	{
-		// Font Types
-		$fontoptions['type'] = preg_split('#\r?\n#s', $vbulletin->options['phpkd_defpost_style_fonts'], -1, PREG_SPLIT_NO_EMPTY);
-		$type = "<option value=\"-1\">" . $vbphrase['phpkd_defpost_default'] . "</option>";	
-		foreach ($fontoptions['type'] AS $fonttypeid => $fonttype)
+		$this->vbulletin =& $vbobj;
+		$this->vbphrase =& $vbphrs;
+	}
+
+	function global_checker()
+	{
+		if (!$this->vbulletin->options['phpkd_defpost_style_active'])
 		{
-			if ($fonttype == $vbulletin->userinfo['phpkd_defpost_style_font'])
-			{
-				$selectedtype = " selected=\"selected\"";
-			}
-			$type .= "\t\t\t\t\t\t\t\t<option value=\"" . $fonttype . "\"$selectedtype>$fonttype</option>\n";
-			unset($selectedtype);
+			return false;
 		}
 
-		// Font Colors
-		$fontoptions['color'] = preg_split('#\r?\n#s', $vbulletin->options['phpkd_defpost_style_colors'], -1, PREG_SPLIT_NO_EMPTY);
-		$color = "<option value=\"-1\">" . $vbphrase['phpkd_defpost_default'] . "</option>";	
-		foreach ($fontoptions['color'] AS $fontcolorid => $fontcolor)
+		return true;
+	}
+
+	function perms_checker()
+	{
+		if ($this->vbulletin->options['phpkd_defpost_style_grps_rule'] == 2)
 		{
-			if ($fontcolor == $vbulletin->userinfo['phpkd_defpost_style_color'])
+			if (is_member_of($this->vbulletin->userinfo, explode(',', $this->vbulletin->options['phpkd_defpost_style_grps'])))
 			{
-				$selectedcolor = " selected=\"selected\"";
+				return false;
 			}
-			$color .= "\t\t\t\t\t\t\t\t<option style=\"background-color: $fontcolor\" value=\"" . $fontcolor . "\"$selectedcolor>$fontcolor</option>\n";
-			unset($selectedcolor);
+		}
+		else if ($this->vbulletin->options['phpkd_defpost_style_grps_rule'] == 1)
+		{
+			if (!is_member_of($this->vbulletin->userinfo, explode(',', $this->vbulletin->options['phpkd_defpost_style_grps'])))
+			{
+				return false;
+			}
 		}
 
-		// Font Sizes
-		$fontoptions['size'] = preg_split('#\r?\n#s', $vbulletin->options['phpkd_defpost_style_sizes'], -1, PREG_SPLIT_NO_EMPTY);
-		$size = "<option value=\"-1\">" . $vbphrase['phpkd_defpost_default'] . "</option>";	
-		foreach ($fontoptions['size'] AS $fontsizeid => $fontsize)
+		if (in_array($this->vbulletin->userinfo['userid'], explode(',', $this->vbulletin->options['phpkd_defpost_style_exc_usrs'])))
 		{
-			if ($fontsize == $vbulletin->userinfo['phpkd_defpost_style_size'])
-			{
-				$selectedsize = " selected=\"selected\"";
-			}
-			$size .= "\t\t\t\t\t\t\t\t<option value=\"" . $fontsize . "\"$selectedsize>$fontsize</option>\n";
-			unset($selectedsize);
+			return false;
 		}
 
-		unset($fontoptions);
-		$vbulletin->templatecache['modifyoptions'] = str_replace('<legend>$vbphrase[visible_post_elements]</legend>', fetch_template('phpkd_defpost_style_profile_options'), $vbulletin->templatecache['modifyoptions']);
-	}]]></phpcode>
+		return true;
+	}
+
+	function types_options()
+	{
+		global $phpkd_defpost_style_types;
+		if ($fontoptions['type'] = preg_split('#\r?\n#s', $this->vbulletin->options['phpkd_defpost_style_fonts'], -1, PREG_SPLIT_NO_EMPTY))
+		{
+			$phpkd_defpost_style_types = "<option value=\"-1\">" . $this->vbphrase['phpkd_defpost_default'] . "</option>\n";	
+			foreach ($fontoptions['type'] AS $fonttypeid => $fonttype)
+			{
+				if ($fonttype == $this->vbulletin->userinfo['phpkd_defpost_style_font'])
+				{
+					$selectedtype = " selected=\"selected\"";
+				}
+				$phpkd_defpost_style_types .= "\t\t\t\t\t\t\t\t<option value=\"" . $fonttype . "\"$selectedtype>$fonttype</option>\n";
+				unset($selectedtype);
+			}
+		}
+		else
+		{
+			$phpkd_defpost_style_types = "";
+		}
+
+		return $phpkd_defpost_style_types;
+	}
+
+	function colors_options()
+	{
+		global $phpkd_defpost_style_colors;
+		if ($fontoptions['color'] = preg_split('#\r?\n#s', $this->vbulletin->options['phpkd_defpost_style_colors'], -1, PREG_SPLIT_NO_EMPTY))
+		{
+			$phpkd_defpost_style_colors = "<option value=\"-1\">" . $this->vbphrase['phpkd_defpost_default'] . "</option>\n";	
+			foreach ($fontoptions['color'] AS $fontcolorid => $fontcolor)
+			{
+				if ($fontcolor == $this->vbulletin->userinfo['phpkd_defpost_style_color'])
+				{
+					$selectedcolor = " selected=\"selected\"";
+				}
+				$phpkd_defpost_style_colors .= "\t\t\t\t\t\t\t\t<option style=\"background-color: $fontcolor\" value=\"" . $fontcolor . "\"$selectedcolor>$fontcolor</option>\n";
+				unset($selectedcolor);
+			}
+		}
+		else
+		{
+			$phpkd_defpost_style_colors = "";
+		}
+
+		return $phpkd_defpost_style_colors;
+	}
+
+	function sizes_options()
+	{
+		global $phpkd_defpost_style_sizes;
+		if ($fontoptions['size'] = preg_split('#\r?\n#s', $this->vbulletin->options['phpkd_defpost_style_sizes'], -1, PREG_SPLIT_NO_EMPTY))
+		{
+			$phpkd_defpost_style_sizes = "<option value=\"-1\">" . $this->vbphrase['phpkd_defpost_default'] . "</option>\n";	
+			foreach ($fontoptions['size'] AS $fontsizeid => $fontsize)
+			{
+				if ($fontsize == $this->vbulletin->userinfo['phpkd_defpost_style_size'])
+				{
+					$selectedsize = " selected=\"selected\"";
+				}
+				$phpkd_defpost_style_sizes .= "\t\t\t\t\t\t\t\t<option value=\"" . $fontsize . "\"$selectedsize>$fontsize</option>\n";
+				unset($selectedsize);
+			}
+		}
+		else
+		{
+			$phpkd_defpost_style_sizes = "";
+		}
+
+		return $phpkd_defpost_style_sizes;
+	}
+
+	function do_template_edit()
+	{
+		$this->vbulletin->templatecache['modifyoptions'] = str_replace('<legend>$vbphrase[visible_post_elements]</legend>', fetch_template('phpkd_defpost_style_profile_options'), $this->vbulletin->templatecache['modifyoptions']);
+	}
+}
+
+function do_phpkd_defpost_style()
+{
+	global $vbulletin, $vbphrase;
+
+	if (!$phpkd_defpost_style = new PHPKD_DefPost_Style($vbulletin, $vbphrase))
+	{
+		return false;
+	}
+
+	if (!$phpkd_defpost_style->global_checker())
+	{
+		return false;
+	}
+
+	if (!$phpkd_defpost_style->perms_checker())
+	{
+		return false;
+	}
+
+	$phpkd_defpost_style->types_options();
+	$phpkd_defpost_style->colors_options();
+	$phpkd_defpost_style->sizes_options();
+	$phpkd_defpost_style->do_template_edit();
+}
+
+do_phpkd_defpost_style();]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title>Default Font/Color/Size in Post (applehat)</title>
+			<title><![CDATA[Default Post Styling [ Processing profile's fields ]]]></title>
 			<hookname>profile_updateoptions</hookname>
 			<phpcode><![CDATA[if ($vbulletin->options['phpkd_defpost_style_active'])
-	{
-		$vbulletin->input->clean_array_gpc('r', array('phpkd_defpost_style_font' => TYPE_STR, 'phpkd_defpost_style_size' => TYPE_STR, 'phpkd_defpost_style_color' => TYPE_STR));
-		$userdata->set('phpkd_defpost_style_font', $vbulletin->GPC['phpkd_defpost_style_font']);
-		$userdata->set('phpkd_defpost_style_size', $vbulletin->GPC['phpkd_defpost_style_size']);
-		$userdata->set('phpkd_defpost_style_color', $vbulletin->GPC['phpkd_defpost_style_color']);
-	}]]></phpcode>
+{
+	$vbulletin->input->clean_array_gpc('r', array('phpkd_defpost_style_font' => TYPE_STR, 'phpkd_defpost_style_size' => TYPE_STR, 'phpkd_defpost_style_color' => TYPE_STR));
+	$userdata->set('phpkd_defpost_style_font', $vbulletin->GPC['phpkd_defpost_style_font']);
+	$userdata->set('phpkd_defpost_style_size', $vbulletin->GPC['phpkd_defpost_style_size']);
+	$userdata->set('phpkd_defpost_style_color', $vbulletin->GPC['phpkd_defpost_style_color']);
+}]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Display default styling opions in Admincp (user's editing page)]]></title>
+			<title><![CDATA[Default Post Styling [ Display opions n Admincp user's editing/adding page ]]]></title>
 			<hookname>useradmin_edit_column1</hookname>
-			<phpcode><![CDATA[if ($vbulletin->options['phpkd_defpost_style_active'])
+			<phpcode><![CDATA[class PHPKD_DefPost_Style
+{
+	function PHPKD_DefPost_Style(&$vbobj, &$usr, $vbphrs)
 	{
-		print_description_row($vbphrase['phpkd_defpost_style'], false, 2, 'optiontitle');
-		$font_options = $db->query_read("
-			SELECT templateid, title, template, template_un, styleid, templatetype
-			FROM " . TABLE_PREFIX . "template
-			WHERE styleid = '" . iif($vbulletin->options['styleid'] > 1, $vbulletin->options['styleid'], '-1') . "'
-			AND title IN('editor_jsoptions_font', 'editor_jsoptions_size')
-		");
+		$this->vbulletin =& $vbobj;
+		$this->vbphrase =& $vbphrs;
+		$this->user =& $usr;
+	}
 
-		$font_cache = array();
-		while ($font_option = $db->fetch_array($font_options))
+	function global_checker()
+	{
+		if (!$this->vbulletin->options['phpkd_defpost_style_active'])
 		{
-			$font_cache["$font_option[title]"] = $font_option;
+			return false;
 		}
-		$db->free_result($font_options);
 
-		// Font Types
-		$fontoptions['type'] = $font_cache['editor_jsoptions_font']['template_un'];
-		$fontoption['type'] = preg_split('#\r?\n#s', $fontoptions['type'], -1, PREG_SPLIT_NO_EMPTY);
+		return true;
+	}
 
-		$type['-1'] = $vbphrase['phpkd_defpost_default'];
-		foreach ($fontoption['type'] AS $fonttypeid => $fonttype)
+	function print_heading()
+	{
+		print_description_row($this->vbphrase['phpkd_defpost_style'], false, 2, 'optiontitle');
+	}
+
+	function types_options()
+	{
+		if ($fontoptions['type'] = preg_split('#\r?\n#s', $this->vbulletin->options['phpkd_defpost_style_fonts'], -1, PREG_SPLIT_NO_EMPTY))
 		{
-			if ($fonttype == $user['phpkd_defpost_style_font'])
+			$phpkd_defpost_style_types['-1'] = $this->vbphrase['phpkd_defpost_default'];
+			foreach ($fontoptions['type'] AS $fonttypeid => $fonttype)
 			{
-				$selectedtype = " selected=\"selected\"";
+				if ($fonttype == $this->user['phpkd_defpost_style_font'])
+				{
+					$selectedtype = " selected=\"selected\"";
+				}
+				$phpkd_defpost_style_types["$fonttype"] = $fonttype;
+				unset($selectedtype);
 			}
-		
-			$type["$fonttype"] = $fonttype;
-			unset($selectedtype);
+			print_select_row($this->vbphrase['phpkd_defpost_style_font'], 'user[phpkd_defpost_style_font]', $phpkd_defpost_style_types, $this->user['phpkd_defpost_style_font']);
 		}
-		print_select_row($vbphrase['phpkd_defpost_style_font'], 'user[phpkd_defpost_style_font]', $type, $user['phpkd_defpost_style_font']);
-
-
-		// Font Colors
-		$fontoption['color'] = preg_split('#\r?\n#s', $vbulletin->options['phpkd_defpost_style_colors'], -1, PREG_SPLIT_NO_EMPTY);
-
-		$color['-1'] = $vbphrase['phpkd_defpost_default'];
-		foreach ($fontoption['color'] AS $fontcolorid => $fontcolor)
+		else
 		{
-			if ($fontcolor == $user['phpkd_defpost_style_color'])
-			{
-				$selectedcolor = " selected=\"selected\"";
-			}
-		
-			$color["$fontcolor"] = $fontcolor;
-			unset($selectedcolor);
+			return false;
 		}
-		print_select_row($vbphrase['phpkd_defpost_style_color'], 'user[phpkd_defpost_style_color]', $color, $user['phpkd_defpost_style_color']);
+	}
 
-
-		// Font Sizes
-		$fontoptions['size'] = $font_cache['editor_jsoptions_size']['template_un'];
-		$fontoption['size'] = preg_split('#\r?\n#s', $fontoptions['size'], -1, PREG_SPLIT_NO_EMPTY);
-
-		$size['-1'] = $vbphrase['phpkd_defpost_default'];
-		foreach ($fontoption['size'] AS $fontsizeid => $fontsize)
+	function colors_options()
+	{
+		if ($fontoptions['color'] = preg_split('#\r?\n#s', $this->vbulletin->options['phpkd_defpost_style_colors'], -1, PREG_SPLIT_NO_EMPTY))
 		{
-			if ($fontsize == $user['phpkd_defpost_style_size'])
+			$phpkd_defpost_style_colors['-1'] = $this->vbphrase['phpkd_defpost_default'];
+			foreach ($fontoptions['color'] AS $fontcolorid => $fontcolor)
 			{
-				$selectedsize = " selected=\"selected\"";
+				if ($fontcolor == $this->user['phpkd_defpost_style_color'])
+				{
+					$selectedcolor = " selected=\"selected\"";
+				}
+				$phpkd_defpost_style_colors["$fontcolor"] = $fontcolor;
+				unset($selectedcolor);
 			}
-
-			$size["$fontsize"] = $fontsize;
-			unset($selectedsize);
+			print_select_row($this->vbphrase['phpkd_defpost_style_color'], 'user[phpkd_defpost_style_color]', $phpkd_defpost_style_colors, $this->user['phpkd_defpost_style_color']);
 		}
-		print_select_row($vbphrase['phpkd_defpost_style_size'], 'user[phpkd_defpost_style_size]', $size, $user['phpkd_defpost_style_size']);
+		else
+		{
+			return false;
+		}
+	}
 
-		unset($font_option);
-	}]]></phpcode>
+	function sizes_options()
+	{
+		if ($fontoptions['size'] = preg_split('#\r?\n#s', $this->vbulletin->options['phpkd_defpost_style_sizes'], -1, PREG_SPLIT_NO_EMPTY))
+		{
+			$phpkd_defpost_style_sizes['-1'] = $this->vbphrase['phpkd_defpost_default'];
+			foreach ($fontoptions['size'] AS $fontsizeid => $fontsize)
+			{
+				if ($fontsize == $this->user['phpkd_defpost_style_size'])
+				{
+					$selectedsize = " selected=\"selected\"";
+				}
+				$phpkd_defpost_style_sizes["$fontsize"] = $fontsize;
+				unset($selectedsize);
+			}
+			print_select_row($this->vbphrase['phpkd_defpost_style_size'], 'user[phpkd_defpost_style_size]', $phpkd_defpost_style_sizes, $this->user['phpkd_defpost_style_size']);
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+function do_phpkd_defpost_style()
+{
+	global $vbulletin, $user, $vbphrase;
+
+	if (!$phpkd_defpost_style = new PHPKD_DefPost_Style($vbulletin, $user, $vbphrase))
+	{
+		return false;
+	}
+
+	if (!$phpkd_defpost_style->global_checker())
+	{
+		return false;
+	}
+
+	$phpkd_defpost_style->print_heading();
+	$phpkd_defpost_style->types_options();
+	$phpkd_defpost_style->colors_options();
+	$phpkd_defpost_style->sizes_options();
+}
+
+do_phpkd_defpost_style();]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title>Default Font/Color/Size in Post (applehat)</title>
+			<title><![CDATA[Default Post Styling [ Validating profile's fields ]]]></title>
 			<hookname>userdata_start</hookname>
 			<phpcode><![CDATA[if ($this->registry->options['phpkd_defpost_style_active'])
-	{
-		$this->validfields['phpkd_defpost_style_font'] = array(TYPE_STR, REQ_NO);
-		$this->validfields['phpkd_defpost_style_size'] = array(TYPE_STR, REQ_NO);
-		$this->validfields['phpkd_defpost_style_color'] = array(TYPE_STR, REQ_NO);
-	}]]></phpcode>
+{
+	$this->validfields['phpkd_defpost_style_font'] = array(TYPE_STR, REQ_NO);
+	$this->validfields['phpkd_defpost_style_size'] = array(TYPE_STR, REQ_NO);
+	$this->validfields['phpkd_defpost_style_color'] = array(TYPE_STR, REQ_NO);
+}]]></phpcode>
 		</plugin>
 	</plugins>
 	<phrases>
+		<phrasetype name="Control Panel Options" fieldname="cpoption">
+			<phrase name="phpkd_defpost_style_forums_rule_all" date="1212117428" username="PHPKD" version="1.0.0"><![CDATA[Include All Forums]]></phrase>
+			<phrase name="phpkd_defpost_style_forums_rule_exclude" date="1212117461" username="PHPKD" version="1.0.0"><![CDATA[Exclude Forums Listed]]></phrase>
+			<phrase name="phpkd_defpost_style_forums_rule_include" date="1212117446" username="PHPKD" version="1.0.0"><![CDATA[Include Forums Listed]]></phrase>
+			<phrase name="phpkd_defpost_style_grps_rule_all" date="1212117144" username="PHPKD" version="1.0.0"><![CDATA[Include All Usergroups]]></phrase>
+			<phrase name="phpkd_defpost_style_grps_rule_exclude" date="1212117181" username="PHPKD" version="1.0.0"><![CDATA[Exclude Groups Listed]]></phrase>
+			<phrase name="phpkd_defpost_style_grps_rule_include" date="1212117167" username="PHPKD" version="1.0.0"><![CDATA[Include Groups Listed]]></phrase>
+		</phrasetype>
 		<phrasetype name="Control Panel User Management" fieldname="cpuser">
 			<phrase name="phpkd_defpost_style" date="1208316837" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling]]></phrase>
 			<phrase name="phpkd_defpost_style_color" date="1208316443" username="PHPKD" version="1.0.0"><![CDATA[Default Color]]></phrase>
@@ -233,8 +419,18 @@ $db->show_errors();]]></uninstallcode>
 			<phrase name="setting_phpkd_defpost_style_active_title" date="1208265315" username="PHPKD" version="1.0.0"><![CDATA[Product Active?]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_colors_desc" date="1211971715" username="PHPKD" version="1.0.0"><![CDATA[List allowed colors for default post styling heer (separate each color with a return [new line]).]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_colors_title" date="1211971715" username="PHPKD" version="1.0.0"><![CDATA[Allowed Colors]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_exc_usrs_desc" date="1212592003" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_exc_usrs_title" date="1212592003" username="PHPKD" version="1.0.0"><![CDATA[Excluded Users (Denied from using this product)]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_fonts_desc" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[List allowed font types for default post styling heer (enter the full name of the font type & separate each type with a return [new line]).]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_fonts_title" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[Allowed Fonts]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_forums_ids_desc" date="1212117378" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_forums_ids_title" date="1212117378" username="PHPKD" version="1.0.0"><![CDATA[Forum IDs (Encluded / Excluded Form This product effect)]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_forums_rule_desc" date="1212117478" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_forums_rule_title" date="1212117478" username="PHPKD" version="1.0.0"><![CDATA[Forums Rule]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_grps_desc" date="1212591968" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_grps_rule_desc" date="1212591984" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_grps_rule_title" date="1212591984" username="PHPKD" version="1.0.0"><![CDATA[Usergroup Rule (Allowed for / Denied from using this product)]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_grps_title" date="1212591968" username="PHPKD" version="1.0.0"><![CDATA[Usergroup IDs (Allowed for / Denied from using this product)]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_sizes_desc" date="1211971708" username="PHPKD" version="1.0.0"><![CDATA[List allowed sizes for default post styling heer (separate each size with a return [new line]).]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_sizes_title" date="1211971708" username="PHPKD" version="1.0.0"><![CDATA[Allowed Sizes]]></phrase>
 			<phrase name="settinggroup_phpkd_defpost_style" date="1208265208" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling Settings]]></phrase>
@@ -326,6 +522,32 @@ Pink</defaultvalue>
 5
 6
 7</defaultvalue>
+			</setting>
+			<setting varname="phpkd_defpost_style_grps" displayorder="50">
+				<datatype>free</datatype>
+				<defaultvalue>2,5,6,7</defaultvalue>
+			</setting>
+			<setting varname="phpkd_defpost_style_grps_rule" displayorder="60">
+				<datatype>number</datatype>
+				<optioncode>radio:piped
+1|phpkd_defpost_style_grps_rule_include
+2|phpkd_defpost_style_grps_rule_exclude
+0|phpkd_defpost_style_grps_rule_all</optioncode>
+				<defaultvalue>0</defaultvalue>
+			</setting>
+			<setting varname="phpkd_defpost_style_exc_usrs" displayorder="70">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="phpkd_defpost_style_forums_ids" displayorder="80">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="phpkd_defpost_style_forums_rule" displayorder="90">
+				<datatype>number</datatype>
+				<optioncode>radio:piped
+0|phpkd_defpost_style_forums_rule_all
+1|phpkd_defpost_style_forums_rule_include
+2|phpkd_defpost_style_forums_rule_exclude</optioncode>
+				<defaultvalue>0</defaultvalue>
 			</setting>
 		</settinggroup>
 	</options>
