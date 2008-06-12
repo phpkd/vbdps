@@ -2,7 +2,7 @@
 
 <product productid="phpkd_defpost_style" active="1">
 	<title>Default Post Styling</title>
-	<description>This product allows users to choose their own default styling for their posts (Font type - colors - sizes).</description>
+	<description><![CDATA[This product allows users to choose their own default styling for their posts (Font type - colors - sizes) [With Full control - allowed groups - excluded users/groups/forums - AdminCP configured: allowed types/colors/sizes].]]></description>
 	<version>1.0.0</version>
 	<revision><![CDATA[$Revision$]]></revision>
 	<released><![CDATA[$Date$]]></released>
