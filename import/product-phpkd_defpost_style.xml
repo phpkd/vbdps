@@ -424,7 +424,7 @@ do_phpkd_defpost_style();]]></phpcode>
 			<phrase name="setting_phpkd_defpost_style_fonts_desc" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[List allowed font types for default post styling heer (enter the full name of the font type & separate each type with a return [new line]).]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_fonts_title" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[Allowed Fonts]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_forums_ids_desc" date="1212117378" username="PHPKD" version="1.0.0" />
-			<phrase name="setting_phpkd_defpost_style_forums_ids_title" date="1212117378" username="PHPKD" version="1.0.0"><![CDATA[Forum IDs (Encluded / Excluded Form This product effect)]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_forums_ids_title" date="1212117378" username="PHPKD" version="1.0.0"><![CDATA[Forum IDs (Included / Excluded Form This product effect)]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_forums_rule_desc" date="1212117478" username="PHPKD" version="1.0.0" />
 			<phrase name="setting_phpkd_defpost_style_forums_rule_title" date="1212117478" username="PHPKD" version="1.0.0"><![CDATA[Forums Rule]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_grps_desc" date="1212591968" username="PHPKD" version="1.0.0" />
