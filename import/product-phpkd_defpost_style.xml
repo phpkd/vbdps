@@ -62,7 +62,7 @@ $db->show_errors();]]></uninstallcode>
 	</templates>
 	<plugins>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Default Post Styling [ Cache templates ]]]></title>
+			<title><![CDATA[Default Post Styling - [ Cache templates ]]]></title>
 			<hookname>cache_templates</hookname>
 			<phpcode><![CDATA[if (THIS_SCRIPT == 'profile' AND $_REQUEST['do'] == 'editoptions' AND $vbulletin->options['phpkd_defpost_style_active'])
 {
@@ -70,7 +70,7 @@ $db->show_errors();]]></uninstallcode>
 }]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Default Post Styling [ Auto edit postbit template ]]]></title>
+			<title><![CDATA[Default Post Styling - [ Auto edit postbit template ]]]></title>
 			<hookname>postbit_display_complete</hookname>
 			<phpcode><![CDATA[if ($this->registry->options['phpkd_defpost_style_active'])
 {
@@ -106,7 +106,7 @@ $db->show_errors();]]></uninstallcode>
 }]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Default Post Styling [ Display options in profile's "Edit Options" page ]]]></title>
+			<title><![CDATA[Default Post Styling - [ Display options in profile's "Edit Options" page ]]]></title>
 			<hookname>profile_editoptions_start</hookname>
 			<phpcode><![CDATA[class PHPKD_DefPost_Style
 {
@@ -257,7 +257,7 @@ function do_phpkd_defpost_style()
 do_phpkd_defpost_style();]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Default Post Styling [ Processing profile's fields ]]]></title>
+			<title><![CDATA[Default Post Styling - [ Processing profile's fields ]]]></title>
 			<hookname>profile_updateoptions</hookname>
 			<phpcode><![CDATA[if ($vbulletin->options['phpkd_defpost_style_active'])
 {
@@ -268,7 +268,7 @@ do_phpkd_defpost_style();]]></phpcode>
 }]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Default Post Styling [ Display opions n Admincp user's editing/adding page ]]]></title>
+			<title><![CDATA[Default Post Styling - [ Display opions n Admincp user's editing/adding page ]]]></title>
 			<hookname>useradmin_edit_column1</hookname>
 			<phpcode><![CDATA[class PHPKD_DefPost_Style
 {
@@ -384,12 +384,12 @@ function do_phpkd_defpost_style()
 do_phpkd_defpost_style();]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Default Post Styling [ Grouping Templates ]]]></title>
+			<title><![CDATA[Default Post Styling - [ Grouping Templates ]]]></title>
 			<hookname>template_groups</hookname>
 			<phpcode><![CDATA[$only['phpkd_defpost_'] = $vbphrase['phpkd_defpost_style'];]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
-			<title><![CDATA[Default Post Styling [ Validating profile's fields ]]]></title>
+			<title><![CDATA[Default Post Styling - [ Validating profile's fields ]]]></title>
 			<hookname>userdata_start</hookname>
 			<phpcode><![CDATA[if ($this->registry->options['phpkd_defpost_style_active'])
 {
