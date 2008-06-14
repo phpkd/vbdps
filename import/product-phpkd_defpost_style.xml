@@ -384,6 +384,11 @@ function do_phpkd_defpost_style()
 do_phpkd_defpost_style();]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
+			<title><![CDATA[Default Post Styling [ Grouping Templates ]]]></title>
+			<hookname>template_groups</hookname>
+			<phpcode><![CDATA[$only['phpkd_defpost_'] = $vbphrase['phpkd_defpost_style'];]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
 			<title><![CDATA[Default Post Styling [ Validating profile's fields ]]]></title>
 			<hookname>userdata_start</hookname>
 			<phpcode><![CDATA[if ($this->registry->options['phpkd_defpost_style_active'])
@@ -402,6 +407,9 @@ do_phpkd_defpost_style();]]></phpcode>
 			<phrase name="phpkd_defpost_style_grps_rule_all" date="1212117144" username="PHPKD" version="1.0.0"><![CDATA[Include All Usergroups]]></phrase>
 			<phrase name="phpkd_defpost_style_grps_rule_exclude" date="1212117181" username="PHPKD" version="1.0.0"><![CDATA[Exclude Groups Listed]]></phrase>
 			<phrase name="phpkd_defpost_style_grps_rule_include" date="1212117167" username="PHPKD" version="1.0.0"><![CDATA[Include Groups Listed]]></phrase>
+		</phrasetype>
+		<phrasetype name="Style Tools" fieldname="style">
+			<phrase name="phpkd_defpost_style" date="1212117167" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling]]></phrase>
 		</phrasetype>
 		<phrasetype name="Control Panel User Management" fieldname="cpuser">
 			<phrase name="phpkd_defpost_style" date="1208316837" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling]]></phrase>
