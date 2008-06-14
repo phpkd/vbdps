@@ -419,18 +419,18 @@ do_phpkd_defpost_style();]]></phpcode>
 			<phrase name="setting_phpkd_defpost_style_active_title" date="1208265315" username="PHPKD" version="1.0.0"><![CDATA[Product Active?]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_colors_desc" date="1211971715" username="PHPKD" version="1.0.0"><![CDATA[List allowed colors for default post styling heer (separate each color with a return [new line]).]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_colors_title" date="1211971715" username="PHPKD" version="1.0.0"><![CDATA[Allowed Colors]]></phrase>
-			<phrase name="setting_phpkd_defpost_style_exc_usrs_desc" date="1212592003" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_exc_usrs_desc" date="1212592003" username="PHPKD" version="1.0.0"><![CDATA[If you need, you can exclude certain users from using this product. (enter a comma list of user IDs)]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_exc_usrs_title" date="1212592003" username="PHPKD" version="1.0.0"><![CDATA[Excluded Users (Denied from using this product)]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_fonts_desc" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[List allowed font types for default post styling heer (enter the full name of the font type & separate each type with a return [new line]).]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_fonts_title" date="1211971703" username="PHPKD" version="1.0.0"><![CDATA[Allowed Fonts]]></phrase>
-			<phrase name="setting_phpkd_defpost_style_forums_ids_desc" date="1212117378" username="PHPKD" version="1.0.0" />
-			<phrase name="setting_phpkd_defpost_style_forums_ids_title" date="1212117378" username="PHPKD" version="1.0.0"><![CDATA[Forum IDs (Included / Excluded Form This product effect)]]></phrase>
-			<phrase name="setting_phpkd_defpost_style_forums_rule_desc" date="1212117478" username="PHPKD" version="1.0.0" />
+			<phrase name="setting_phpkd_defpost_style_forums_ids_desc" date="1212117378" username="PHPKD" version="1.0.0"><![CDATA[If you need, you can specify certain forums to included in/excluded from using this product. (enter a comma list of forum IDs)]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_forums_ids_title" date="1212117378" username="PHPKD" version="1.0.0"><![CDATA[Forum IDs]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_forums_rule_desc" date="1212117478" username="PHPKD" version="1.0.0"><![CDATA[Choose the rule this product should apply for the specified forums, all options are self explanatory.]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_forums_rule_title" date="1212117478" username="PHPKD" version="1.0.0"><![CDATA[Forums Rule]]></phrase>
-			<phrase name="setting_phpkd_defpost_style_grps_desc" date="1212591968" username="PHPKD" version="1.0.0" />
-			<phrase name="setting_phpkd_defpost_style_grps_rule_desc" date="1212591984" username="PHPKD" version="1.0.0" />
-			<phrase name="setting_phpkd_defpost_style_grps_rule_title" date="1212591984" username="PHPKD" version="1.0.0"><![CDATA[Usergroup Rule (Allowed for / Denied from using this product)]]></phrase>
-			<phrase name="setting_phpkd_defpost_style_grps_title" date="1212591968" username="PHPKD" version="1.0.0"><![CDATA[Usergroup IDs (Allowed for / Denied from using this product)]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_grps_desc" date="1212591968" username="PHPKD" version="1.0.0"><![CDATA[If you need, you can specify certain usergroups to allow for/deny from using this product. (enter a comma list of usergroup IDs)]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_grps_rule_desc" date="1212591984" username="PHPKD" version="1.0.0"><![CDATA[Choose the rule this product should apply for the specified usergroups, all options are self explanatory.]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_grps_rule_title" date="1212591984" username="PHPKD" version="1.0.0"><![CDATA[Usergroup Rule]]></phrase>
+			<phrase name="setting_phpkd_defpost_style_grps_title" date="1212591968" username="PHPKD" version="1.0.0"><![CDATA[Usergroup IDs]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_sizes_desc" date="1211971708" username="PHPKD" version="1.0.0"><![CDATA[List allowed sizes for default post styling heer (separate each size with a return [new line]).]]></phrase>
 			<phrase name="setting_phpkd_defpost_style_sizes_title" date="1211971708" username="PHPKD" version="1.0.0"><![CDATA[Allowed Sizes]]></phrase>
 			<phrase name="settinggroup_phpkd_defpost_style" date="1208265208" username="PHPKD" version="1.0.0"><![CDATA[Default Post Styling Settings]]></phrase>
