@@ -12,6 +12,44 @@
 		<dependency dependencytype="vbulletin" minversion="3.7.0" maxversion="3.7.99" />
 	</dependencies>
 	<codes>
+		<code version="*">
+			<installcode><![CDATA[$info['revision'] = trim(substr(substr($arr['revision'], 10), 0, -1));
+$info['released'] = trim(substr(substr($arr['released'], 6), 0, -1));
+if ($vbulletin->options['phpkd_free37_data'])
+{
+	$holder = unserialize($vbulletin->options['phpkd_free37_data']);
+	$holder[$info['productid']] = $info;
+	$data = $db->escape_string(serialize($holder));
+	$db->query_write("
+		UPDATE " . TABLE_PREFIX . "setting
+		SET value = '$data'
+		WHERE varname = 'phpkd_free37_data'
+	");
+}
+else
+{
+	$holder[$info['productid']] = $info;
+	$data = $db->escape_string(serialize($holder));
+
+	$db->query_write("
+		REPLACE INTO " . TABLE_PREFIX . "setting
+			(varname, grouptitle, value, defaultvalue, datatype, optioncode, displayorder, advanced, volatile, validationcode, blacklist, product)
+		VALUES
+			('phpkd_free37_data', 'version', '$data', '', 'free', '', '1000', '0', '1', '', '0', 'phpkd_frame_work')
+	");
+
+	$db->query_write("
+		REPLACE INTO " . TABLE_PREFIX . "phrase
+			(languageid, fieldname, varname, text, product, username, dateline, version)
+		VALUES
+			('-1', 'vbsettings', 'setting_phpkd_free37_data_title', 'PHPKD Free Products\' Data (3.7.x) [Sensitive]', 'phpkd_frame_work', 'PHPKD', '" . TIMENOW . "', '1.1.0'),
+			('-1', 'vbsettings', 'setting_phpkd_free37_data_desc', 'PHPKD Free Products\' Data used for debugging issues. <strong>[Sensitive Data, DON\'T ALTER]</strong>.', 'phpkd_frame_work', 'PHPKD', '" . TIMENOW . "', '1.1.0')
+		");
+}
+
+print_dots_start("Installing: " . $info['title'] . "<br />Version: " . $info['version'] . ", Revision: " . $info['revision'] . ", Released: " . $info['released'] . ".<br />" . $vbphrase['please_wait'], ':', 'phpkd_aqr_install_info');
+print_dots_stop();]]></installcode>
+		</code>
 		<code version="1.0.0">
 			<installcode><![CDATA[$db->hide_errors();
 $db->query_write("ALTER TABLE `" . TABLE_PREFIX . "user` ADD `phpkd_defpost_style_font` VARCHAR(30) NOT NULL default ''");
@@ -38,6 +76,7 @@ $db->show_errors();]]></uninstallcode>
 	$post[message]
 </if>]]></template>
 		<template name="phpkd_defpost_style_profile_options" templatetype="template" date="1212981921" username="PHPKD" version="1.0.0"><![CDATA[<legend><phrase 1="$vbphrase[phpkd_defpost_style_font]" 2="$vbphrase[phpkd_defpost_style_size]" 3="$vbphrase[phpkd_defpost_style_color]">$vbphrase[phpkd_defpost_style_title]</phrase></legend>
+					<!-- $phpkd_defpost_style[title] -->
 					<table cellpadding="0" cellspacing="$stylevar[formspacer]" border="0" width="100%">
 					<tr>
 						<td>$vbphrase[phpkd_defpost_style_desc]</td>
@@ -56,6 +95,7 @@ $db->show_errors();]]></uninstallcode>
 					   </td>
 					</tr>
 					</table>
+					<!-- Product's Debug Info: Name: $phpkd_defpost_style[title], Version: $phpkd_defpost_style[version], Revision: $phpkd_defpost_style[revision], Released: $phpkd_defpost_style[released]. -->
 				</fieldset>
 				<fieldset class="fieldset">
 					<legend>$vbphrase[visible_post_elements]</legend>]]></template>
@@ -254,7 +294,15 @@ function do_phpkd_defpost_style()
 	$phpkd_defpost_style->do_template_edit();
 }
 
-do_phpkd_defpost_style();]]></phpcode>
+// Do every thing :)
+do_phpkd_defpost_style();
+
+// Prepare Debiugging Data!
+if (!$phpkd_defpost_style AND $phpkd_defpost_style_data = unserialize($vbulletin->options['phpkd_free37_data']))
+{
+	$phpkd_defpost_style =& $phpkd_defpost_style_data['phpkd_defpost_style'];
+}
+]]></phpcode>
 		</plugin>
 		<plugin active="1" executionorder="5">
 			<title><![CDATA[Default Post Styling - [ Processing profile's fields ]]]></title>
